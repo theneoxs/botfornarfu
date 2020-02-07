@@ -1,5 +1,7 @@
+# -*- coding: utf8 -*-
 import requests
 import vk_api
+import time
 from vk_api import VkUpload 
 from vk_api.longpoll import VkLongPoll, VkEventType
 from random import randint
@@ -15,85 +17,85 @@ upload = VkUpload(vk_session)
 attachments = []
 attachments.append('doc68106853_535852671')
 
-for event in longpoll.listen():
-    if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-   #Слушаем longpoll, если пришло сообщение то:			
-        if event.text.lower() == 'тест': #Если написали заданную фразу
-            if event.from_user:
-                vk.messages.send( #Отправляем собщение
-                    user_id=event.user_id,
-                    random_id=randint(1, 10**17),
-                    message='Сигнал получен\n Отвечаю: Бип-Буп-Бип'
-                )
-            elif event.from_chat:
-                vk.messages.send( #Отправляем собщение
-                    chat_id=event.chat_id,
-                    random_id=randint(1, 10**17),
-                    message='Сигнал получен\n Отвечаю: Бип-Буп-Бип'
-                )
-        elif event.text.lower() == 'менюшка': #Если написали заданную фразу
-            if event.from_user:
-                vk.messages.send( #Отправляем собщение
-                    user_id=event.user_id,
-                    random_id=randint(1, 10**17),
-                    message='Выбери: 1, 2 или 3?',
-                )
-            elif event.from_chat:
-                vk.messages.send( #Отправляем собщение
-                    chat_id=event.chat_id,
-                    random_id=randint(1, 10**17),
-                    message='Выбери: 1, 2 или 3?',
+while True:
+    for event in longpoll.listen():
+        if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+       #РЎР»СѓС€Р°РµРј longpoll, РµСЃР»Рё РїСЂРёС€Р»Рѕ СЃРѕРѕР±С‰РµРЅРёРµ С‚Рѕ:			
+            if event.text.lower() == 'С‚РµСЃС‚': #Р•СЃР»Рё РЅР°РїРёСЃР°Р»Рё Р·Р°РґР°РЅРЅСѓСЋ С„СЂР°Р·Сѓ
+                if event.from_user:
+                    vk.messages.send( #РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‰РµРЅРёРµ
+                        user_id=event.user_id,
+                        random_id=randint(1, 10**17),
+                        message='РЎРёРіРЅР°Р» РїРѕР»СѓС‡РµРЅ\n РћС‚РІРµС‡Р°СЋ: Р‘РёРї-Р‘СѓРї-Р‘РёРї'
                     )
-            for event in longpoll.listen():
-                if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                    if event.text.lower() == '1' or event.text.lower() == '2' or event.text.lower() == '3': #Если написали заданную фразу              
-                        if event.from_user:
-                            vk.messages.send( #Отправляем собщение
-                                user_id=event.user_id,
-                                random_id=randint(1, 10**17),
-                                message='Ты выбрал '+ event.text + '. Я угадал?:)',
-                            )
-                            break
-                        elif event.from_chat:
-                            vk.messages.send( #Отправляем собщение
-                                chat_id=event.chat_id,
-                                random_id=randint(1, 10**17),
-                                message='Ты выбрал  '+ event.text + '. Я угадал?:)',
-                            )
-                            break
-                    else:
-                        if event.from_user:
-                            vk.messages.send( #Отправляем собщение
-                                user_id=event.user_id,
-                                random_id=randint(1, 10**17),
-                                attachment=','.join(attachments),
-                                message='Это шо такое?',
-                            )
-                            break
-                        elif event.from_chat:
-                            vk.messages.send( #Отправляем собщение
-                                chat_id=event.chat_id,
-                                random_id=randint(1, 10**17),
-                                attachment=','.join(attachments),
-                                message='Это шо такое?',
-                            )
-                            break
-        else:
-            if event.from_user:
-                vk.messages.send( #Отправляем собщение
-                    user_id=event.user_id,
-                    random_id=randint(1, 10**17),
-                    attachment=','.join(attachments),
-                    message='Это шо такое?',
-                )
-                break
-            elif event.from_chat:
-                vk.messages.send( #Отправляем собщение
-                    chat_id=event.chat_id,
-                    random_id=randint(1, 10**17),
-                    attachment=','.join(attachments),
-                    message='Это шо такое?',
-                )
-        continue
-
-                    
+                elif event.from_chat:
+                    vk.messages.send( #РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‰РµРЅРёРµ
+                        chat_id=event.chat_id,
+                        random_id=randint(1, 10**17),
+                        message='РЎРёРіРЅР°Р» РїРѕР»СѓС‡РµРЅ\n РћС‚РІРµС‡Р°СЋ: Р‘РёРї-Р‘СѓРї-Р‘РёРї'
+                    )
+            elif event.text.lower() == 'РјРµРЅСЋС€РєР°': #Р•СЃР»Рё РЅР°РїРёСЃР°Р»Рё Р·Р°РґР°РЅРЅСѓСЋ С„СЂР°Р·Сѓ
+                if event.from_user:
+                    vk.messages.send( #РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‰РµРЅРёРµ
+                        user_id=event.user_id,
+                        random_id=randint(1, 10**17),
+                        message='Р’С‹Р±РµСЂРё: 1, 2 РёР»Рё 3?',
+                    )
+                elif event.from_chat:
+                    vk.messages.send( #РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‰РµРЅРёРµ
+                        chat_id=event.chat_id,
+                        random_id=randint(1, 10**17),
+                        message='Р’С‹Р±РµСЂРё: 1, 2 РёР»Рё 3?',
+                        )
+                for event in longpoll.listen():
+                    if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+                        if event.text.lower() == '1' or event.text.lower() == '2' or event.text.lower() == '3': #Р•СЃР»Рё РЅР°РїРёСЃР°Р»Рё Р·Р°РґР°РЅРЅСѓСЋ С„СЂР°Р·Сѓ              
+                            if event.from_user:
+                                vk.messages.send( #РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‰РµРЅРёРµ
+                                    user_id=event.user_id,
+                                    random_id=randint(1, 10**17),
+                                    message='РўС‹ РІС‹Р±СЂР°Р» '+ event.text + '. РЇ СѓРіР°РґР°Р»?:)',
+                                )
+                                break
+                            elif event.from_chat:
+                                vk.messages.send( #РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‰РµРЅРёРµ
+                                    chat_id=event.chat_id,
+                                    random_id=randint(1, 10**17),
+                                    message='РўС‹ РІС‹Р±СЂР°Р»  '+ event.text + '. РЇ СѓРіР°РґР°Р»?:)',
+                                )
+                                break
+                        else:
+                            if event.from_user:
+                                vk.messages.send( #РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‰РµРЅРёРµ
+                                    user_id=event.user_id,
+                                    random_id=randint(1, 10**17),
+                                    attachment=','.join(attachments),
+                                    message='Р­С‚Рѕ С€Рѕ С‚Р°РєРѕРµ?',
+                                )
+                                break
+                            elif event.from_chat:
+                                vk.messages.send( #РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‰РµРЅРёРµ
+                                    chat_id=event.chat_id,
+                                    random_id=randint(1, 10**17),
+                                    attachment=','.join(attachments),
+                                    message='Р­С‚Рѕ С€Рѕ С‚Р°РєРѕРµ?',
+                                )
+                                break
+            else:
+                if event.from_user:
+                    vk.messages.send( #РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‰РµРЅРёРµ
+                        user_id=event.user_id,
+                        random_id=randint(1, 10**17),
+                        attachment=','.join(attachments),
+                        message='Р­С‚Рѕ С€Рѕ С‚Р°РєРѕРµ?',
+                    )
+                    break
+                elif event.from_chat:
+                    vk.messages.send( #РћС‚РїСЂР°РІР»СЏРµРј СЃРѕР±С‰РµРЅРёРµ
+                        chat_id=event.chat_id,
+                        random_id=randint(1, 10**17),
+                        attachment=','.join(attachments),
+                        message='Р­С‚Рѕ С€Рѕ С‚Р°РєРѕРµ?',
+                    )
+            continue
+    time.sleep(1)               
