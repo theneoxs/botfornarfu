@@ -6,7 +6,7 @@ from vk_api import VkUpload
 from vk_api.longpoll import VkLongPoll, VkEventType
 from random import randint
 
-tokenbot = "3a667e067e50bfb9432fc218dea67519e041ba7a0366ca1f689d382b87d04ccf020de43d1280fa4ea3fb3"
+tokenbot = ""
 vk_session = vk_api.VkApi(token=tokenbot)
 
 longpoll = VkLongPoll(vk_session)
@@ -20,8 +20,26 @@ attachments.append('doc68106853_535852671')
 while True:
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-       #Слушаем longpoll, если пришло сообщение то:			
-            if event.text.lower() == 'тест': #Если написали заданную фразу
+       #Слушаем longpoll, если пришло сообщение то:	
+            if event.text.lower() == 'помощь': #Если написали заданную фразу
+                if event.from_user:
+                    vk.messages.send( #Отправляем собщение
+                        user_id=event.user_id,
+                        random_id=randint(1, 10**17),
+                        message="""
+                        Возможные команды:
+                        - Тест
+                        - Менюшка
+                        - Помощь
+                        """
+                    )
+                elif event.from_chat:
+                    vk.messages.send( #Отправляем собщение
+                        chat_id=event.chat_id,
+                        random_id=randint(1, 10**17),
+                                    message='Сигнал получен\n Отвечаю: Бип-Буп-Бип'
+                    )
+            elif event.text.lower() == 'тест': #Если написали заданную фразу
                 if event.from_user:
                     vk.messages.send( #Отправляем собщение
                         user_id=event.user_id,
@@ -72,7 +90,6 @@ while True:
                                     attachment=','.join(attachments),
                                     message='Это шо такое?',
                                 )
-                                break
                             elif event.from_chat:
                                 vk.messages.send( #Отправляем собщение
                                     chat_id=event.chat_id,
@@ -80,14 +97,13 @@ while True:
                                     attachment=','.join(attachments),
                                     message='Это шо такое?',
                                 )
-                                break
             else:
                 if event.from_user:
                     vk.messages.send( #Отправляем собщение
                         user_id=event.user_id,
                         random_id=randint(1, 10**17),
                         attachment=','.join(attachments),
-                        message='Это шо такое?',
+                        message='Это шо такое? Напиши "помощь"',
                     )
                     break
                 elif event.from_chat:
@@ -95,7 +111,7 @@ while True:
                         chat_id=event.chat_id,
                         random_id=randint(1, 10**17),
                         attachment=','.join(attachments),
-                        message='Это шо такое?',
+                        message='Это шо такое? Напиши "помощь"',
                     )
             continue
     time.sleep(1)               
