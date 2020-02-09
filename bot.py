@@ -2,7 +2,7 @@
 import requests
 import vk_api
 import vk
-import time
+import time, sys
 from vk_api import VkUpload 
 from vk_api.longpoll import VkLongPoll, VkEventType
 from random import randint
@@ -36,6 +36,7 @@ def test():
 def valentinka():
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+            print("{} write {}".format(event.user_id, event.text))
             if event.text.lower() == 'да':
                 # прохождение анкеты
                 vk.messages.send(
@@ -92,6 +93,7 @@ def check(name):
 def addstudent():
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+            print("{} write {}".format(event.user_id, event.text))
             try:
                 text = int(event.text)
             except:
@@ -110,6 +112,7 @@ def addstudent():
                     )
                     for event in longpoll.listen():
                         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+                            print("{} write {}".format(event.user_id, event.text))
                             if event.text.lower() == 'да' and users.get(text) != None:
                                 vk.messages.send(
                                     user_id=event.user_id,
@@ -151,6 +154,7 @@ def addstudent():
                     )
                     for event in longpoll.listen():
                         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+                            print("{} write {}".format(event.user_id, event.text))
                             if event.text.lower() == 'назад':
                                 break
                             elif event.text.lower() == 'отписаться от рассылки':
@@ -238,6 +242,7 @@ f.close()
 while True:
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+            print("{} write {}".format(event.user_id, event.text))
        #Слушаем longpoll, если пришло сообщение то:	
             if event.text.lower() == 'backup': #Если написали заданную фразу
                 backup(users)                                
@@ -260,6 +265,7 @@ while True:
                     menu()
                 for event in longpoll.listen():
                     if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+                        print("{} write {}".format(event.user_id, event.text))
                         if event.text.lower() == 'валентинка':  # Если написали заданную фразу
                             if event.from_user:
                                 vk.messages.send(
@@ -310,9 +316,48 @@ while True:
                                 )
                         
 
+            elif event.text.lower() == 'admin_panel':
+                vk.messages.send(
+                    user_id=event.user_id,
+                    random_id=randint(1, 10 ** 17),
+                    message='Enter Password:'
+                )
+                for event in longpoll.listen():
+                    if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+                        print("{} write {}".format(event.user_id, event.text))
+                        if event.text.lower() == 'enter password':
+                            vk.messages.send(
+                                user_id=event.user_id,
+                                random_id=randint(1, 10 ** 17),
+                                message='Admin panel activated. Greetings, Administrator!'
+                            )         
+                        for event in longpoll.listen():
+                            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+                                print("{} write {}".format(event.user_id, event.text))
+                                if event.text.lower() == 'exit':
+                                    vk.messages.send(
+                                        user_id=event.user_id,
+                                        random_id=randint(1, 10 ** 17),
+                                        message='Goodbye!'
+                                    )  
+                                    break
+                                if event.text.lower() == 'db':
+                                    vk.messages.send(
+                                        user_id=event.user_id,
+                                        random_id=randint(1, 10 ** 17),
+                                        message='{}'.format(users)
+                                        )                                      
+                                if event.text.lower() == 'offbot':
+                                    vk.messages.send(
+                                        user_id=event.user_id,
+                                        random_id=randint(1, 10 ** 17),
+                                        message='Sure. Bot disactivated.'
+                                        ) 
+                                    sys.exit()
+                        break
             else:
                 if event.from_user:
                     neponatno()
                     break
-            continue
+           
     time.sleep(1)
