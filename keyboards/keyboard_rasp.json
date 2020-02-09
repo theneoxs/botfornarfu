@@ -1,0 +1,20 @@
+{
+  "one_time": true,
+  "buttons":
+  [
+    [{
+      "action": {
+        "type": "text",
+        "label": "Назад"
+      },
+      "color": "positive"
+    },
+      {
+        "action": {
+          "type": "text",
+          "label": "Отписаться от рассылки"
+        },
+        "color": "positive"
+      }]
+  ]
+}

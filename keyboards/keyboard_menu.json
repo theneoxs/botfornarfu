@@ -1,0 +1,48 @@
+{
+  "one_time": true,
+  "buttons":
+  [
+    [{
+      "action": {
+        "type": "text",
+        "label": "Валентинка"
+      },
+      "color": "positive"
+    },
+      {
+        "action": {
+          "type": "text",
+          "label": "Расписание"
+        },
+        "color": "positive"
+      }],
+      [{
+        "action": {
+          "type": "text",
+          "label": "СТО"
+        },
+        "color": "positive"
+      },
+      {
+        "action": {
+          "type": "text",
+          "label": "Денежное"
+        },
+        "color": "positive"
+      }],
+    [{
+      "action": {
+        "type": "text",
+        "label": "Назад"
+      },
+      "color": "default"
+    },
+	{
+        "action": {
+          "type": "text",
+          "label": "Помощь"
+        },
+        "color": "positive"
+      }]
+  ]
+}

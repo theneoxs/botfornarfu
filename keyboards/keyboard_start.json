@@ -1,0 +1,27 @@
+{
+  "one_time": true,
+  "buttons":
+  [
+    [{
+      "action": {
+        "type": "text",
+        "label": "Тест"
+      },
+      "color": "positive"
+    },
+      {
+        "action": {
+          "type": "text",
+          "label": "Помощь"
+        },
+        "color": "positive"
+      }],
+    [{
+      "action": {
+        "type": "text",
+        "label": "Меню"
+      },
+      "color": "positive"
+    }]
+  ]
+}
