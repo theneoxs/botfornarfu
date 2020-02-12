@@ -150,7 +150,7 @@ def addstudent():
                         user_id=event.user_id,
                         random_id=randint(1, 10 ** 17),
                         keyboard=open("keyboards/keyboard_rasp.json", "r", encoding="UTF-8").read(),
-                        message='Расписание'
+                        message='Расписание в процессе разработки.'
                     )
                     for event in longpoll.listen():
                         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
@@ -182,7 +182,7 @@ def addstudent():
                         user_id=event.user_id,
                         random_id=randint(1, 10 ** 17),
                         keyboard=open("keyboards/keyboard_rasp_2.json", "r", encoding="UTF-8").read(),
-                        message='Расписание'
+                        message='Расписание в процессе разработки.'
                     )
                     for event in longpoll.listen():
                         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
@@ -201,8 +201,8 @@ def addstudent():
             
                        
         
-#  4c186333ef3f740f9af02180d48bebec88587fa76f705287325595523e6a2d0dc4032107976de40d894a8
-tokenbot = "4c186333ef3f740f9af02180d48bebec88587fa76f705287325595523e6a2d0dc4032107976de40d894a8"
+#  
+tokenbot = "d090bb9a6dbdcc87319064acbc76d002c250c122b8da3333e7ba1dfe095d6f6da7777972456feb10a5985"
 vk_session = vk_api.VkApi(token=tokenbot)
 
 longpoll = VkLongPoll(vk_session)
@@ -239,98 +239,97 @@ for line in f:
 f.close()
 #_________________________
 
-while True:
-    for event in longpoll.listen():
-        if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-            print("{} write {}".format(event.user_id, event.text))
-       #Слушаем longpoll, если пришло сообщение то:	
-            if event.text.lower() == 'backup': #Если написали заданную фразу
-                backup(users)                                
-                if event.from_user:
-                    vk.messages.send(
-                        user_id=event.user_id,
-                        random_id=randint(1, 10 ** 17),
-                        keyboard=open("keyboards/keyboard_yes_or_no.json", "r", encoding="UTF-8").read(),
-                        message='Saved.'
-                    )
-            if event.text.lower() == 'помощь': #Если написали заданную фразу
-                if event.from_user:
-                    pomosh()
-
-            elif event.text.lower() == 'тест': #Если написали заданную фразу
-                if event.from_user:
-                    test()
-            elif event.text.lower() == 'меню': #Если написали заданную фразу
-                if event.from_user:
-                    menu()
-                for event in longpoll.listen():
-                    if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                        print("{} write {}".format(event.user_id, event.text))
-                        if event.text.lower() == 'валентинка':  # Если написали заданную фразу
-                            if event.from_user:
-                                vk.messages.send(
-                                    user_id=event.user_id,
-                                    random_id=randint(1, 10 ** 17),
-                                    keyboard=open("keyboards/keyboard_yes_or_no.json", "r", encoding="UTF-8").read(),
-                                    message='Пройти анкету?'
-                                )
-                                valentinka()
-                        elif event.text.lower() == 'расписание':  # Если написали заданную фразу
-                            if event.from_user:
-                                vk.messages.send(
-                                    user_id=event.user_id,
-                                    random_id=randint(1, 10 ** 17),
-                                    message='Введите номер вашей группы:'
-                                )
-                                addstudent()
-                        elif event.text.lower() == 'назад':  # Если написали заданную фразу
-                            if event.from_user:
-                                vk.messages.send(
-                                    user_id=event.user_id,
-                                    random_id=randint(1, 10 ** 17),
-                                    keyboard=open("keyboards/keyboard_start.json", "r", encoding="UTF-8").read(),
-                                    message='Стартовое окно'
-                                                         )
-                            break   
-                        elif event.text.lower() == 'помощь':
-                            vk.messages.send(
-                                    user_id=event.user_id,
-                                    random_id=randint(1, 10 ** 17),
-                                    keyboard=open("keyboards/keyboard_menu.json", "r", encoding="UTF-8").read(),
-                                    message="""
-                                    Доступные команды:
-                                    - Валентинка
-                                    - Расписание
-                                    - СТО
-                                    - Денежное
-                                    - Помощь
-                                    - Назад"""
-                            )
-                        else: # Если написали херню
-                            if event.from_user:
-                                vk.messages.send(
-                                    user_id=event.user_id,
-                                    random_id=randint(1, 10 ** 17),
-                                    keyboard=open("keyboards/keyboard_menu.json", "r", encoding="UTF-8").read(),
-                                    message='Это что такое?'
-                                )
-                        
-
-            elif event.text.lower() == 'admin_panel':
+for event in longpoll.listen():
+    if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+        print("{} write {}".format(event.user_id, event.text))
+   #Слушаем longpoll, если пришло сообщение то:	
+        if event.text.lower() == 'backup': #Если написали заданную фразу
+            backup(users)                                
+            if event.from_user:
                 vk.messages.send(
                     user_id=event.user_id,
                     random_id=randint(1, 10 ** 17),
-                    message='Enter Password:'
+                    keyboard=open("keyboards/keyboard_yes_or_no.json", "r", encoding="UTF-8").read(),
+                    message='Saved.'
                 )
-                for event in longpoll.listen():
-                    if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                        print("{} write {}".format(event.user_id, event.text))
-                        if event.text.lower() == 'enter password':
+        if event.text.lower() == 'помощь': #Если написали заданную фразу
+            if event.from_user:
+                pomosh()
+
+        elif event.text.lower() == 'тест': #Если написали заданную фразу
+            if event.from_user:
+                test()
+        elif event.text.lower() == 'меню': #Если написали заданную фразу
+            if event.from_user:
+                menu()
+            for event in longpoll.listen():
+                if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+                    print("{} write {}".format(event.user_id, event.text))
+                    if event.text.lower() == 'валентинка':  # Если написали заданную фразу
+                        if event.from_user:
                             vk.messages.send(
                                 user_id=event.user_id,
                                 random_id=randint(1, 10 ** 17),
-                                message='Admin panel activated. Greetings, Administrator!'
-                            )         
+                                keyboard=open("keyboards/keyboard_yes_or_no.json", "r", encoding="UTF-8").read(),
+                                message='Пройти анкету?'
+                            )
+                            valentinka()
+                    elif event.text.lower() == 'расписание':  # Если написали заданную фразу
+                        if event.from_user:
+                            vk.messages.send(
+                                user_id=event.user_id,
+                                random_id=randint(1, 10 ** 17),
+                                message='Введите номер вашей группы:'
+                            )
+                            addstudent()
+                    elif event.text.lower() == 'назад':  # Если написали заданную фразу
+                        if event.from_user:
+                            vk.messages.send(
+                                user_id=event.user_id,
+                                random_id=randint(1, 10 ** 17),
+                                keyboard=open("keyboards/keyboard_start.json", "r", encoding="UTF-8").read(),
+                                message='Стартовое окно'
+                                                     )
+                        break   
+                    elif event.text.lower() == 'помощь':
+                        vk.messages.send(
+                                user_id=event.user_id,
+                                random_id=randint(1, 10 ** 17),
+                                keyboard=open("keyboards/keyboard_menu.json", "r", encoding="UTF-8").read(),
+                                message="""
+                                Доступные команды:
+                                - Валентинка
+                                - Расписание
+                                - СТО
+                                - Денежное
+                                - Помощь
+                                - Назад"""
+                        )
+                    else: # Если написали херню
+                        if event.from_user:
+                            vk.messages.send(
+                                user_id=event.user_id,
+                                random_id=randint(1, 10 ** 17),
+                                keyboard=open("keyboards/keyboard_menu.json", "r", encoding="UTF-8").read(),
+                                message='Это что такое?'
+                            )
+                    
+
+        elif event.text.lower() == 'admin_panel':
+            vk.messages.send(
+                user_id=event.user_id,
+                random_id=randint(1, 10 ** 17),
+                message='Enter Password:'
+            )
+            for event in longpoll.listen():
+                if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+                    print("{} write {}".format(event.user_id, event.text))
+                    if event.text.lower() == 'enter password':
+                        vk.messages.send(
+                            user_id=event.user_id,
+                            random_id=randint(1, 10 ** 17),
+                            message='Admin panel activated. Greetings, Administrator!'
+                        )         
                         for event in longpoll.listen():
                             if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
                                 print("{} write {}".format(event.user_id, event.text))
@@ -355,9 +354,14 @@ while True:
                                         ) 
                                     sys.exit()
                         break
-            else:
-                if event.from_user:
-                    neponatno()
-                    break
+                    else:
+                        vk.messages.send(
+                            user_id=event.user_id,
+                            random_id=randint(1, 10 ** 17),
+                            message='Denied.'
+                        )                                 
+        else:
+            if event.from_user:
+                neponatno()
+                break
            
-    time.sleep(1)
