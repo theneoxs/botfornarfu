@@ -210,7 +210,7 @@ def write_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': random.randint(0, 2048)})
 
 
-tokenbot = "d090bb9a6dbdcc87319064acbc76d002c250c122b8da3333e7ba1dfe095d6f6da7777972456feb10a5985"
+tokenbot = "1a51e77f3a305327585f0b972bc9c6e8080b77c438b6980069bf1276f311944f06aba18c60dcc19a04321"
 vk = vk_api.VkApi(token=tokenbot)
 
 longpoll = VkLongPoll(vk)

@@ -1,6 +1,4 @@
 # -*- coding: utf8 -*-
-import random
-
 import requests
 import vk_api
 import vk
@@ -8,6 +6,7 @@ import time, sys
 from vk_api import VkUpload
 from vk_api.longpoll import VkLongPoll, VkEventType
 from random import randint
+
 
 def neponatno():
     vk.messages.send(
@@ -23,7 +22,7 @@ def pomosh():
         user_id=event.user_id,
         random_id=randint(1, 10 ** 17),
         keyboard=open("keyboards/keyboard_start.json", "r", encoding="UTF-8").read(),
-        message="""
+        message=""" 
         Возможные команды:
         - Тест
         - Меню
@@ -400,7 +399,7 @@ def notification():
                 break
 
 
-#d090bb9a6dbdcc87319064acbc76d002c250c122b8da3333e7ba1dfe095d6f6da7777972456feb10a5985 - artem
+#
 tokenbot = "1a51e77f3a305327585f0b972bc9c6e8080b77c438b6980069bf1276f311944f06aba18c60dcc19a04321"
 vk_session = vk_api.VkApi(token=tokenbot)
 
@@ -415,6 +414,7 @@ attachments.append('doc68106853_535852671')
 users = {}
 teachers = {}
 notifications = {}
+
 # _________________________
 f = open('users', 'r')
 trigger = 1
@@ -435,6 +435,7 @@ for line in f:
     if line == "_\n":
         trigger = 1
         users[group] = addusr
+
 f.close()
 # _________________________
 f2 = open('notifications', 'r')
@@ -456,8 +457,9 @@ for line in f2:
     if line == "_\n":
         trigger = 1
         notifications[group] = addnot
+
 f2.close()
-#_________________________
+# _________________________
 
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
@@ -465,8 +467,6 @@ for event in longpoll.listen():
         # Слушаем longpoll, если пришло сообщение то:
         if event.text.lower() == 'backup':  # Если написали заданную фразу
             backup(users)
-            backupteach(teachers)
-            backupnot(notifications)
             if event.from_user:
                 vk.messages.send(
                     user_id=event.user_id,
@@ -552,7 +552,7 @@ for event in longpoll.listen():
                             vk.messages.send(
                                 user_id=event.user_id,
                                 random_id=randint(1, 10 ** 17),
-                                keyboard=open("keyboards/keyboard_yes_or_no.json", "r",
+                                keyboard=open("keybords/keyboard_yes_or_no.json", "r",
                                               encoding="UTF-8").read(),
                                 message='Тест оповещения, нажмите "Да"'
                             )
@@ -563,7 +563,7 @@ for event in longpoll.listen():
                                 user_id=event.user_id,
                                 random_id=randint(1, 10 ** 17),
                                 keyboard=open(
-                                    "keyboards/keyboard_yes_or_no.json", "r",
+                                    "keybords/keyboard_yes_or_no.json", "r",
                                     encoding="UTF-8").read(),
                                 message='Тестовая авторизация, нажмите "Да"'
                             )
