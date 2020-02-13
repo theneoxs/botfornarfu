@@ -13,7 +13,7 @@ class VkBot:
         print("\nAdd bot")
         self.USER_ID = event.user_id
 
-        self.COMMANDS = ["тест", "помощь", "валентинка", "меню", "расписание","admin panel"]
+        self.COMMANDS = ["тест", "помощь", "валентинка", "меню", "расписание", "admin panel"]
 
     def new_message(self, message):
         if message.lower() == self.COMMANDS[0]:
@@ -53,7 +53,6 @@ class VkBot:
                         'random_id': random.randint(0, 2048)}))
             self.admin_panel()
 
-
         if message.lower() != self.COMMANDS:
             return "Воспользуйтесь командой 'Помощь'"
 
@@ -85,7 +84,7 @@ class VkBot:
                 else:
                     (vk.method("messages.send",
                                {'user_id': event.user_id, 'message': "Denied!",
-                                'random_id': random.randint(0, 2048),}))
+                                'random_id': random.randint(0, 2048), }))
                     return
 
     def backup(self):
@@ -123,7 +122,7 @@ class VkBot:
                 else:
                     (vk.method("messages.send",
                                {'user_id': event.user_id, 'message': "Введите 'Да' или 'Нет'",
-                                'random_id': random.randint(0, 2048),  'attachments': ','.join(attachments)}))
+                                'random_id': random.randint(0, 2048), 'attachments': ','.join(attachments)}))
 
     def addstudent(self):
         for event in longpoll.listen():
@@ -204,8 +203,6 @@ class VkBot:
                                                 'random_id': random.randint(0, 2048)}))
 
 
-
-
 def write_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': random.randint(0, 2048)})
 
@@ -216,7 +213,6 @@ vk = vk_api.VkApi(token=tokenbot)
 longpoll = VkLongPoll(vk)
 
 upload = VkUpload(vk)
-
 
 attachments = []
 attachments.append('doc68106853_535852671')

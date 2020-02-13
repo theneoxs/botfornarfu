@@ -129,7 +129,6 @@ def checkteach(name):
             return True
     return False
 
-
 def addstudent():
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
