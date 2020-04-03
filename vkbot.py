@@ -207,13 +207,13 @@ def write_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': random.randint(0, 2048)})
 
 
-tokenbot = "1a51e77f3a305327585f0b972bc9c6e8080b77c438b6980069bf1276f311944f06aba18c60dcc19a04321"
+tokenbot = "18d28ce73b747190a67dcc56a20017e3f8363de4fe3e37ebaf2d09023aae7b00b62280a4dd6190f587022"
 vk = vk_api.VkApi(token=tokenbot)
 
 longpoll = VkLongPoll(vk)
 
 upload = VkUpload(vk)
-
+bots = {}
 attachments = []
 attachments.append('doc68106853_535852671')
 
@@ -222,10 +222,12 @@ users = {}
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me:
         print(f'New message from', event.user_id, end='')
-
-        bot = VkBot(event.user_id)
-
-        write_msg(event.user_id, bot.new_message(event.text))
+        
+        if bots.get(event.user_id) == None:
+            bots[event.user_id] = VkBot(event.user_id)
+        
+        write_msg(event.user_id, bots[event.user_id].new_message(event.text))
 
         print('Text: ', event.text)
         print("-------------------")
+        print(bots)
