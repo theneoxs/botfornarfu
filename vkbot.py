@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 import random
 import sys
+import numpy as np
 
 import vk_api
 from vk_api import VkUpload
@@ -13,7 +14,7 @@ class VkBot:
         print("\nAdd bot")
         self.USER_ID = event.user_id
 
-        self.COMMANDS = ["тест", "помощь", "валентинка", "меню", "расписание", "admin panel"]
+        self.COMMANDS = ["тест", "помощь", "валентинка", "меню", "расписание", "admin panel", "игра"]
 
     def new_message(self, message):
         if message.lower() == self.COMMANDS[0]:
@@ -41,7 +42,8 @@ class VkBot:
                 - СТО
                 - Денежное
                 - Помощь
-                - Назад"""
+                - Назад
+                - Игра"""
         if message.lower() == self.COMMANDS[4]:
             (vk.method("messages.send",
                        {'user_id': event.user_id, 'message': "Введите номер группы?",
@@ -52,6 +54,11 @@ class VkBot:
                        {'user_id': event.user_id, 'message': "Enter Password:",
                         'random_id': random.randint(0, 2048)}))
             self.admin_panel()
+        if message.lower() == self.COMMANDS[6]:
+            (vk.method("messages.send",
+                       {'user_id': event.user_id, 'message': "Хотите сыграть в игру?",
+                        'random_id': random.randint(0, 2048)}))
+            self.game()
 
         if message.lower() != self.COMMANDS:
             return "Воспользуйтесь командой 'Помощь'"
@@ -202,12 +209,76 @@ class VkBot:
                                                 'message': "Не понимаю, напиши из выбранного (Назад)",
                                                 'random_id': random.randint(0, 2048)}))
 
+    def game(self):
+        for event in longpoll.listen():
+            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+                if event.text.lower() == 'да':
+                    (vk.method("messages.send",
+                               {'user_id': event.user_id, 'message': "Замечательно, давай начнем!\n"
+                                                                     "Введите число от 1 до 100, чье число окажется ближе к рандомному числу которое я создам, тот и победил.",
+                                'random_id': random.randint(0, 2048)}))
+                    self.gameplay()
+                if event.text.lower() == 'нет':
+                    (vk.method("messages.send",
+                               {'user_id': event.user_id, 'message': "Очень жаль, заходи еще!",
+                                'random_id': random.randint(0, 2048)}))
+                    return
+                return
+
+    def gameplay(self):
+
+        for event in longpoll.listen():
+            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+
+
+                try:
+                    a = random.randint(1, 100)  # рандомное число
+                    b = random.randint(1, 100)  # число загаданная ботом
+                    c = int(event.text)  # число игрока
+                except:
+                    (vk.method("messages.send",
+                               {'user_id': event.user_id, 'message': "Введите число, а не что-то другое!",
+                                'random_id': random.randint(0, 2048)}))
+                    return
+
+                else:
+                    if abs(a - b) > abs(a - c):  # побед игрок
+                        (vk.method("messages.send",
+                                   {'user_id': event.user_id, 'message': "Рандомное число - " + str(a) + "\n" +
+                                                                         "Ваше число - " + str(c) + "\n" +
+                                                                         "Мое число - " + str(b) + "\n" +
+                                                                         "Вы победили! Сыграем еще раз?\n",
+                                    'random_id': random.randint(0, 2048)}))
+                        self.game()
+                        return
+
+                    if abs(a - b) < abs(a - c):  # побед бот
+                        (vk.method("messages.send",
+                                   {'user_id': event.user_id, 'message': "Рандомное число - " + str(a) + "\n" +
+                                                                         "Ваше число - " + str(c) + "\n" +
+                                                                         "Мое число - " + str(b) + "\n" +
+                                                                         "Я победил! Сыграем еще раз?\n",
+                                    'random_id': random.randint(0, 2048)}))
+                        self.game()
+                        return
+
+                    if abs(a - b) == abs(a - c):  # ничья
+                        (vk.method("messages.send",
+                                   {'user_id': event.user_id, 'message': "Рандомное число - " + str(a) + "\n" +
+                                                                         "Ваше число - " + str(c) + "\n" +
+                                                                         "Мое число - " + str(b) + "\n" +
+                                                                         "Ничья! Сыграем еще раз?\n",
+                                    'random_id': random.randint(0, 2048)}))
+                        self.game()
+                        return
 
 def write_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': random.randint(0, 2048)})
 
 
-tokenbot = "18d28ce73b747190a67dcc56a20017e3f8363de4fe3e37ebaf2d09023aae7b00b62280a4dd6190f587022"
+# 18d28ce73b747190a67dcc56a20017e3f8363de4fe3e37ebaf2d09023aae7b00b62280a4dd6190f587022 - main
+# 1a51e77f3a305327585f0b972bc9c6e8080b77c438b6980069bf1276f311944f06aba18c60dcc19a04321 - test
+tokenbot = "1a51e77f3a305327585f0b972bc9c6e8080b77c438b6980069bf1276f311944f06aba18c60dcc19a04321"
 vk = vk_api.VkApi(token=tokenbot)
 
 longpoll = VkLongPoll(vk)
@@ -222,10 +293,10 @@ users = {}
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me:
         print(f'New message from', event.user_id, end='')
-        
+
         if bots.get(event.user_id) == None:
             bots[event.user_id] = VkBot(event.user_id)
-        
+
         write_msg(event.user_id, bots[event.user_id].new_message(event.text))
 
         print('Text: ', event.text)
