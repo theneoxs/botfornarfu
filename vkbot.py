@@ -239,7 +239,6 @@ class VkBot:
                     (vk.method("messages.send",
                                {'user_id': event.user_id, 'message': "Введите число, а не что-то другое!",
                                 'random_id': random.randint(0, 2048)}))
-                    return
 
                 else:
                     if abs(a - b) > abs(a - c):  # побед игрок
