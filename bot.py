@@ -399,7 +399,7 @@ def notification():
 
 
 #
-tokenbot = "1a51e77f3a305327585f0b972bc9c6e8080b77c438b6980069bf1276f311944f06aba18c60dcc19a04321"
+tokenbot = ""
 vk_session = vk_api.VkApi(token=tokenbot)
 
 longpoll = VkLongPoll(vk_session)

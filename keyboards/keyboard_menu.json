@@ -3,46 +3,46 @@
   "buttons":
   [
     [{
-      "action": {
-        "type": "text",
-        "label": "Валентинка"
-      },
-      "color": "positive"
-    },
-      {
         "action": {
           "type": "text",
-          "label": "Расписание"
-        },
-        "color": "positive"
-      }],
-      [{
-        "action": {
-          "type": "text",
-          "label": "СТО"
+          "label": "Тест"
         },
         "color": "positive"
       },
       {
         "action": {
           "type": "text",
-          "label": "Денежное"
+          "label": "Помощь"
         },
         "color": "positive"
       }],
     [{
       "action": {
         "type": "text",
-        "label": "Назад"
+        "label": "Денежное"
       },
-      "color": "default"
+      "color": "positive"
     },
 	{
         "action": {
           "type": "text",
-          "label": "Помощь"
+          "label": "СТО"
         },
         "color": "positive"
-      }]
+      }],
+	 [{
+		"action": {
+          "type": "text",
+          "label": "Написать сообщение"
+        },
+        "color": "default"
+	 },
+	 {
+		"action": {
+          "type": "text",
+          "label": "Игра"
+        },
+        "color": "positive"
+	 }]
   ]
 }

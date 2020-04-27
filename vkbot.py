@@ -1,7 +1,8 @@
 # -*- coding: utf8 -*-
+import threading
 import random
 import sys
-import numpy as np
+from random import randint
 
 import vk_api
 from vk_api import VkUpload
@@ -11,293 +12,649 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 class VkBot:
 
     def __init__(self, user_id):
-        print("\nAdd bot")
+        print("\nAdd bot\n")
         self.USER_ID = event.user_id
+        self.ADMIN = [137788585, 143066092, 152485617, 122314025]
 
-        self.COMMANDS = ["тест", "помощь", "валентинка", "меню", "расписание", "admin panel", "игра"]
-
+        self.COMMANDS = ["тест", "помощь", "денежное", "сто", "написать сообщение", "начать", "игра"]
+        self.MONEY = [["гсс", "государственная социальная стипендия", "социалка"], 
+                      ["именная", "именная стипендия"], 
+                      ["матпомощь", "материалка", "материальная поддержка"], 
+                      ["пгас", "повышенная государственная академическая стипендия","повышенка" ], 
+                      ["первокурсник 5.0", "cтипендия 'первокурсник 5.0'"],
+                      ["назад"]]
+        self.STO = [["1", "ссылка"],
+                    ["2", "оглавление"],
+                    ["3", "поля"],
+                    ["4", "текст"],
+                    ["5", "структурные элементы"],
+                    ["6", "заголовки"],
+                    ["7", "подразделы"],
+                    ["8", "формулы"],
+                    ["9", "листинг"],
+                    ["10", "списки"],
+                    ["11", "приложение"],
+                    ["12", "рисунки"],
+                    ["13", "таблицы"],
+                    ["14", "ссылки"],
+                    ["15", "библиографическая ссылка"],
+                    ["0", "назад"]]
+        self.POS = 0
+        
+    
+    
     def new_message(self, message):
-        if message.lower() == self.COMMANDS[0]:
-            return "Сигнал получен\n Отвечаю: Бип-Буп-Бип"
-            # (vk.method("messages.send",
-            #       {'user_id': event.user_id, 'message': "Сигнал получен\n Отвечаю: Бип-Буп-Бип",
-            #        'random_id': random.randint(0, 2048)}))
+        
         if message.lower() == self.COMMANDS[1]:
-            return """
-                        Возможные команды:
-                        - Тест
-                        - Меню
-                        - Помощь
-                        """
-        if message.lower() == self.COMMANDS[2]:
-            (vk.method("messages.send",
-                       {'user_id': event.user_id, 'message': "Желаете пройти анкету?",
-                        'random_id': random.randint(0, 2048)}))
-            self.valentinka()
-        if message.lower() == self.COMMANDS[3]:
-            return """
-                Доступные команды:
-                - Валентинка
-                - Расписание
-                - СТО
-                - Денежное
-                - Помощь
-                - Назад
-                - Игра"""
-        if message.lower() == self.COMMANDS[4]:
-            (vk.method("messages.send",
-                       {'user_id': event.user_id, 'message': "Введите номер группы?",
-                        'random_id': random.randint(0, 2048)}))
-            self.addstudent()
-        if message.lower() == self.COMMANDS[5]:
-            (vk.method("messages.send",
-                       {'user_id': event.user_id, 'message': "Enter Password:",
-                        'random_id': random.randint(0, 2048)}))
-            self.admin_panel()
-        if message.lower() == self.COMMANDS[6]:
-            (vk.method("messages.send",
-                       {'user_id': event.user_id, 'message': "Хотите сыграть в игру?",
-                        'random_id': random.randint(0, 2048)}))
-            self.game()
-
-        if message.lower() != self.COMMANDS:
-            return "Воспользуйтесь командой 'Помощь'"
-
-    def admin_panel(self):
-        for event in longpoll.listen():
-            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                if event.text.lower() == 'enter password':
-                    (vk.method("messages.send",
-                               {'user_id': event.user_id, 'message': "Admin panel activated. Greetings, Administrator!",
-                                'random_id': random.randint(0, 2048)}))
-                    for event in longpoll.listen():
-                        if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                            if event.text.lower() == 'exit':
-                                (vk.method("messages.send",
-                                           {'user_id': event.user_id, 'message': "Goodbye!",
-                                            'random_id': random.randint(0, 2048)}))
-                                return
-                            if event.text.lower() == 'db':
-                                (vk.method("messages.send",
-                                           {'user_id': event.user_id, 'message': '{}'.format(users),
-                                            'random_id': random.randint(0, 2048)}))
-
-                            if event.text.lower() == 'offbot':
-                                (vk.method("messages.send",
-                                           {'user_id': event.user_id, 'message': "Sure. Bot disactivated.",
-                                            'random_id': random.randint(0, 2048)}))
-                                sys.exit()
-                    return
+            com = "Возможные команды:"
+            kp = ""
+            if self.POS == 0:
+                kp = keyboardsl[0]
+                for i in self.COMMANDS: 
+                    if i != "начать":
+                        com += "\n- " + i.capitalize()
+            elif self.POS == 1:
+                kp = keyboardsl[1]
+                for i in self.MONEY:
+                    com += "\n- " + i[0].capitalize()
+            elif self.POS == 2:
+                kp = keyboard[2]
+                for i in self.STO:
+                    com += "\n- " + i[0].capitalize()
+            elif self.POS == 4:
+                kp = keyboard[3]
+                com += """- Рейтинг
+                - Счет
+                - Назад"""                  
+            write_msg(self.USER_ID, com, "", kp)
+            return 1        
+        
+        elif self.POS == 3:
+            t = threading.Thread(target=sending, args=(self.ADMIN, self.USER_ID, message))
+            t.start()
+            write_msg(self.USER_ID, "Сообщение успешно доставлено", "", keyboardsl[0])
+            self.POS = 0
+            return 1
+        
+        elif self.POS == 4:
+            msg = ""
+            k = ""
+            if users.get(self.USER_ID) == None:
+                users[self.USER_ID] = 0
+                
+            if message.lower() == "назад":
+                msg = "Ну ладно, приходи ещё:)"
+                k = keyboardsl[0]
+                self.POS = 0
+                
+            elif message.lower() == "рейтинг":
+                msg = rate()
+                k = keyboardsl[3]
+                
+            elif message.lower() == "счет":
+                msg += "Твой счет: " + str(users[self.USER_ID])
+                k = keyboardsl[3]
+            else:
+                try:
+                    a = random.randint(1, 100)  # рандомное число
+                    b = random.randint(1, 100)  # число загаданная ботом
+                    c = int(event.text)  # число игрока
+                except: 
+                    msg = "Не хитри, введи число:"
+                    k = keyboardsl[3]
                 else:
-                    (vk.method("messages.send",
-                               {'user_id': event.user_id, 'message': "Denied!",
-                                'random_id': random.randint(0, 2048), }))
-                    return
+                    if abs(a - b) > abs(a - c):  # побед игрок
+                        msg = "Рандомное число - " + str(a) + "\n" + "Ваше число - " + str(c) + "\n" + "Мое число - " + str(b) + "\n" + "Вы победили! +1 очко в копилку:)\nПриходи ещё!"
+                        users[self.USER_ID] += 1
+                        k = keyboardsl[3]                        
 
-    def backup(self):
-        w = open('users', 'w')
-        for elem in users:
-            values = users[elem]
-            w.write(str(elem) + "\n")
-            for value in values:
-                w.write(str(value) + "\n")
+                    if abs(a - b) < abs(a - c):  # побед бот
+                        msg = "Рандомное число - " + str(a) + "\n" + "Ваше число - " + str(c) + "\n" + "Мое число - " + str(b) + "\n" + "Я победил! -1 очко из копилки:(\nПриходи ещё!"
+                        k = keyboardsl[3]
+                        users[self.USER_ID] -=1
 
-            w.write("_\n")
-        w.close()
+                    if abs(a - b) == abs(a - c):  # ничья
+                        msg = "Рандомное число - " + str(a) + "\n" + "Ваше число - " + str(c) + "\n" + "Мое число - " + str(b) + "\n" + "Ничья!\nПриходи ещё!"
+                        k = keyboardsl[3]
+                        
+            write_msg(self.USER_ID, msg, "", k)
+            return 1
+            
+            
+        elif self.POS == 1:
+            if message.lower() in self.MONEY[0]:
+                msg = """Государственная социальная стипендия
+                Эта стипендия назначается детям сиротам, лицам из числа детей сирот, инвалидам I, II групп, инвалидам с детства, жертвам радиационных катастроф, людям пострадавшим в военных действиях или гражданским людям проходившим военную службу по контракту не менее 3 лет, а также студентам получившим государственную социальную помощь (Например: если ты прописан один, ты вышел замуж или женился, неполная семья).
+                
+                Для назначения ГСС необходимо предоставить документы подтверждающие принадлежность к категориям имеющим право на получение ГСС.
+                
+                Если ты учишься на 1 или 2 курсе, то тебе должны платить повышенную государственную стипендию, если у тебя нет троек и двоек.
+                
+                Сумма, выплачиваемой стипендии не должна быть меньше прожиточного минимума."""
+                att = ','.join([attachments[1][0]])
+                write_msg(self.USER_ID, msg, att, keyboardsl[1])
+                return 1
+            
+            elif message.lower() in self.MONEY[1]:
+                msg = "Именная стипендия"
+                att = ','.join([attachments[1][1]])
+                write_msg(self.USER_ID, msg, att, keyboardsl[1])
+                return 1
+            
+            elif message.lower() in self.MONEY[2]:
+                msg = "Материальная поддержка"
+                att = ','.join([attachments[1][2]])
+                write_msg(self.USER_ID, msg, att, keyboardsl[1])
+                return 1
+            
+            elif message.lower() in self.MONEY[3]:
+                msg = """Повышенная государственная академическая стипендия
+                Если ты 2 курс и старше и ты закончил сессию на 5 и/или 4, а также ты был активен на протяжении учебного года, то ты можешь подать заявление на повышенную государственную академическую стипендию. В повышенной государственной академической стипендии есть несколько направлений, по которой ты сможешь её получить – это учебная деятельность, научно-исследовательская деятельность, общественная деятельность, культурно-творческая деятельность, а также спортивная деятельность. Более подробно ты сможешь узнать про эту стипендию на сайте САФУ или в инфографике ниже :)"""
+                att = ','.join([attachments[1][3],attachments[1][4]])
+                write_msg(self.USER_ID, msg, att, keyboardsl[1])
+                return 1
+            
+            elif message.lower() in self.MONEY[4]:
+                msg = """Первокурсник 5.0
+                Это стипендия выплачивается только первокурсникам очной формы обучения. И если ты хочешь её получить, то тебе нужно знать несколько критериев, по которым она будет выплачиваться.
+                
+                1) По направлениям
+                - Если ты участвовал во всероссийских и международных олимпиадах и у тебя замечательные результаты.
+                - Если ты окончил школу с золотой или серебряной медалью, имеешь аттестат с отличием.
+                - Если ты закончил колледж на отлично.
+                2) Если ты физмат, химбио или технарь то тебя заинтересуют, естественные, технические или инженерные направления. Чтобы получить эту стипендию необходимо сдать ЕГЭ на необходимое количество баллов:
+                ЕГЭ не менее 70 баллов по математике, информатике, биологии и географии, а также не менее 65 баллов по физике и химии или иметь в сумме не менее 220 баллов за экзамены.
+                
+                3) Если гуманитарий, педагог или экономист, то тебе будут интересны – соответствующие направления, а чтобы получить стипендию Первокурсник 5.0, обучаясь на этих направлениях, тебе нужно сдать ЕГЭ не менее чем на 260 баллов за 3 экзамена.
+                
+                Если ты поступаешь в ИСМАРТ, то тебе необходимо набрать не менее 180 баллов.
+                
+                Хочешь продлить эту стипендию на второй семестр? Если да, то сдай сессию на пятёрки и не забудь про зачёты. (・`ω´・)
+                
+                Если всё же ты не сможешь сдать сессию на отлично и у тебя будут несколько четвёрок, то не отчаивайся, стипендия будет ниже, но хотя бы она будет. (･ω<)☆
+                Размер стипендии определяется ректором университета:
+                5000 руб. – если ты сдал 1 профильный предмет на требуемое количество баллов, 
+                7000 руб. – если ты сдал 2 профильных предмета на нужное количество баллов,
+                10000 руб. – если ты имеешь в сумме необходимое количество баллов"""
+                att = ','.join([attachments[1][5]])
+                write_msg(self.USER_ID, msg, att, keyboardsl[1])
+                return 1
+            
+            elif message.lower() in self.MONEY[5]:
+                msg = "Назад"
+                write_msg(self.USER_ID, msg, "", keyboardsl[0])
+                self.POS = 0
+                return 1
+            else:
+                msg = "Не знаю такой команды, напиши 'Помощь'\n"
+                write_msg(self.USER_ID, msg, "", keyboardsl[1])
+                return 1
+            
+        elif self.POS == 2:
+            if message.lower() in self.STO[0]:
+                msg = "Ссылка на СТО: \n" + rules[0]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            
+            elif message.lower() in self.STO[1]:
+                msg = "Оглавление: \n" + rules[1]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[2]:
+                msg = "Поля: \n" + rules[2]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[3]:
+                msg = "Текст: \n" + rules[3]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[4]:
+                msg = "Элементы: \n" + rules[4]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])                return 1
+            
+            elif message.lower() in self.STO[5]:
+                msg = "Заголовки разделов: \n" + rules[5]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[6]:
+                msg = "Подразделы: \n" + rules[6]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[7]:
+                msg = "Формулы: \n" + rules[7]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[8]:
+                msg = "Листинг: \n" + rules[8]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[9]:
+                msg = "Списки: \n" + rules[9]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[10]:
+                msg = "Приложение: \n" + rules[10]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[11]:
+                msg = "Рисунки: \n" + rules[11]
+                att = ''
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[12]:
+                msg = "Таблицы: \n" + rules[12]
+                att = ','.join(attachments[2])
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[13]:
+                msg = "Ссылки: \n" + rules[13]
+                att = ""
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[14]:
+                msg = "Библиографическая ссылка: \n" + rules[14]
+                att = ""
+                write_msg(self.USER_ID, msg, att, keyboardsl[2])
+                return 1
+            elif message.lower() in self.STO[-1]:
+                msg = "Назад"
+                att = ''
+                self.POS = 0
+                write_msg(self.USER_ID, msg, att, keyboardsl[0])
+                return 1
+            else:
+                msg = "Не знаю такой команды, напиши 'Помощь'\n"
+                write_msg(self.USER_ID, msg, "", keyboardsl[2])
+                return 1    
+            
+        elif message.lower() == self.COMMANDS[0] and self.POS == 0:
+            write_msg(self.USER_ID, "Сигнал получен\n Отвечаю: Бип-Буп-Бип", "", keyboardsl[0])
+            return 1
+        
+        
+        
+        elif message.lower() == self.COMMANDS[2] and self.POS == 0:
+            self.POS = 1
+            write_msg(self.USER_ID, """Какой вид денежного вопроса тебя интересует?
+            - Государственная социальная стипендия
+            - Именная стипендия
+            - Материальная поддержка
+            - Повышенная государственная академическая стипендия
+            - Стипендия 'Первокурсник 5.0'
+            """, "", keyboardsl[1])
+            return 1
+        
+        elif message.lower() == self.COMMANDS[3] and self.POS == 0:
+            self.POS = 2
+            write_msg(self.USER_ID, """Какой раздел СТО тебя интересует?
+            1 Ссылка на СТО
+            2 Оглавление
+            3 Поля документа
+            4 Оформление текста
+            5 Структурные элементы
+            6 Заголовки разделов
+            7 Подразделы
+            8 Формулы
+            9 Листинг
+            10 Оформление списков
+            11 Приложение
+            12 Оформление рисунков
+            13 Таблицы
+            14 Ссылки
+            15 Библиографическая ссылка
+            0 Назад
+            """, "", keyboardsl[2])
+            return 1
+        
+        elif message.lower() == self.COMMANDS[4] and self.POS == 0:
+            self.POS = 3
+            write_msg(self.USER_ID, "Введи сообщение для администрации:", "", "")
+            return 1
+        
+        elif message.lower() == self.COMMANDS[5]:
+            msg = """Привет, друг!
+            Ты попал к боту нашего дружного студенческого совета ВШИТАС!
+            Здесь ты можешь:
+            - В разделе "Денежное" узнать сведения о стипендиях
+            - В разделе "СТО" узнать краткую информацию о заполнении всех отчетных документов для студентов в университете
+            - В разделе "Написать сообщение" написать информацию, которую ты хотел бы прорекламировать или оповестить об этом нашего председателя!
+            Больше функционала в процессе разработки:)
+            """
+            write_msg(self.USER_ID, msg, "", keyboardsl[0])
+            return 1
+        elif message.lower() == self.COMMANDS[6]:
+            msg = "Ну что, друг, давай сыграем в игру! \nПравила просты: Введи число от 1 до 100, чье число окажется ближе к рандомному числу, которое я создам, тот и победил.\nВведи число:"
+            write_msg(self.USER_ID, msg, "", keyboardsl[3])
+            self.POS = 4
+            return 1
+        elif message.lower() == "backup":
+            backup()
+        elif message.lower() not in self.COMMANDS:
+            write_msg(self.USER_ID, "Воспользуйтесь командой 'Помощь'", "", keyboardsl[0])
+            return 1    
 
     def check(self, name):
         for elem in users:
             values = users[elem]
             if name in values:
                 return True
-
         return False
+    
+def sending(admin, user_id, message):
+    check = 0
+    for i in admin:
+        msg = "Новое сообщение от vk.com/id" + str(user_id) + " :\n" + message
+        try:
+            write_msg(i, msg, "", "")
+        except:
+            print("Not sending message for " + str(i))
+            check += 1
+        else:
+            print("Sending message for " + str(i))
+    
+    if check == 0:
+        
+        return 1
+    else:
+        print("Error: not sendint " + str(check) + " messages")
+        return 1
+    
+def rate():
+    list_d = list(users.items())
+    list_d.sort(key=lambda i: i[1]).reverse()
+    msg = "Вот первые 10 игроков в рейтинге:\n"
+    last = 0
+    if len(list_d) < 9:
+        last = len(list_d)
+    else:
+        last = 9
+    for i in range(0,last):
+        msg += str(i+1) + ") " + str(vk.users.get(user_id = list_d[i][0])[0]['first_name']) + " " + str(vk.users.get(user_id = list_d[i][0])[0]['last_name']) + " - " +     str(list_d[i][1]) + "\n"
+    return msg
 
-    def valentinka(self):
-        for event in longpoll.listen():
-            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                if event.text.lower() == 'да':
-                    (vk.method("messages.send",
-                               {'user_id': event.user_id, 'message': "Спасибо!",
-                                'random_id': random.randint(0, 2048)}))
-                    return
-                if event.text.lower() == 'нет':
-                    (vk.method("messages.send",
-                               {'user_id': event.user_id, 'message': "Очень жаль",
-                                'random_id': random.randint(0, 2048)}))
-                    return
-                else:
-                    (vk.method("messages.send",
-                               {'user_id': event.user_id, 'message': "Введите 'Да' или 'Нет'",
-                                'random_id': random.randint(0, 2048), 'attachments': ','.join(attachments)}))
-
-    def addstudent(self):
-        for event in longpoll.listen():
-            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                try:
-                    text = int(event.text)
-                except:
-                    (vk.method("messages.send",
-                               {'user_id': event.user_id, 'message': "Что-то пошло не так",
-                                'random_id': random.randint(0, 2048)}))
-                else:
-                    if users.get(text) == None or event.user_id not in users[text]:
-                        (vk.method("messages.send",
-                                   {'user_id': event.user_id,
-                                    'message': "Согласны ли вы получать информацию о расписании данной группы каждый день в 6.00 и срочные оповещения от преподавателей?",
-                                    'random_id': random.randint(0, 2048)}))
-                        for event in longpoll.listen():
-                            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                                if event.text.lower() == 'да' and users.get(text) != None:
-                                    (vk.method("messages.send",
-                                               {'user_id': event.user_id, 'message': "Принято",
-                                                'random_id': random.randint(0, 2048)}))
-                                    users[text].append(event.user_id)
-                                    self.backup()
-                                    return
-                                elif event.text.lower() == 'да' and users.get(text) == None:
-                                    (vk.method("messages.send",
-                                               {'user_id': event.user_id, 'message': "Принято",
-                                                'random_id': random.randint(0, 2048)}))
-                                    users.update({text: [event.user_id]})
-                                    self.backup()
-                                    return
-                                elif event.text.lower() == 'нет':
-                                    (vk.method("messages.send",
-                                               {'user_id': event.user_id, 'message': "Принято",
-                                                'random_id': random.randint(0, 2048)}))
-                                    return
-                                else:
-                                    (vk.method("messages.send",
-                                               {'user_id': event.user_id, 'message': "Введите 'Да' или 'Нет'",
-                                                'random_id': random.randint(0, 2048)}))
-                    if self.check(event.user_id):
-                        (vk.method("messages.send",
-                                   {'user_id': event.user_id, 'message': "Расписание в процессе разработки.",
-                                    'random_id': random.randint(0, 2048)}))
-                        for event in longpoll.listen():
-                            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                                if event.text.lower() == 'назад':
-                                    return
-                                elif event.text.lower() == 'отписаться от рассылки':
-                                    for elem in users:
-                                        values = users[elem]
-                                        if event.user_id in values:
-                                            users[elem].remove(event.user_id)
-                                            self.backup(users)
-                                            return
-                                        (vk.method("messages.send",
-                                                   {'user_id': event.user_id,
-                                                    'message': "Отписано",
-                                                    'random_id': random.randint(0, 2048)}))
-                                else:
-                                    (vk.method("messages.send",
-                                               {'user_id': event.user_id,
-                                                'message': "Не понимаю, напиши из выбранного (Назад)",
-                                                'random_id': random.randint(0, 2048)}))
-                    else:
-                        (vk.method("messages.send",
-                                   {'user_id': event.user_id, 'message': "Расписание в процессе разработки.",
-                                    'random_id': random.randint(0, 2048)}))
-                        for event in longpoll.listen():
-                            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                                if event.text.lower() == 'назад':
-                                    return
-                                else:
-                                    (vk.method("messages.send",
-                                               {'user_id': event.user_id,
-                                                'message': "Не понимаю, напиши из выбранного (Назад)",
-                                                'random_id': random.randint(0, 2048)}))
-
-    def game(self):
-        for event in longpoll.listen():
-            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-                if event.text.lower() == 'да':
-                    (vk.method("messages.send",
-                               {'user_id': event.user_id, 'message': "Замечательно, давай начнем!\n"
-                                                                     "Введите число от 1 до 100, чье число окажется ближе к рандомному числу которое я создам, тот и победил.",
-                                'random_id': random.randint(0, 2048)}))
-                    self.gameplay()
-                if event.text.lower() == 'нет':
-                    (vk.method("messages.send",
-                               {'user_id': event.user_id, 'message': "Очень жаль, заходи еще!",
-                                'random_id': random.randint(0, 2048)}))
-                    return
-                return
-
-    def gameplay(self):
-
-        for event in longpoll.listen():
-            if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
+def backup():
+    w = open('users', 'w')
+    for elem in users:
+        values = users[elem]
+        w.write(str(elem) + " " + str(values) + "\n")
+    w.close()
+    
+def write_msg(user_id, message, photos, keys):
+    vk.messages.send(
+        user_id=user_id,
+        random_id=randint(1, 10 ** 17),
+        attachment=photos,
+        keyboard=keys,
+        message=message)
+    
 
 
-                try:
-                    a = random.randint(1, 100)  # рандомное число
-                    b = random.randint(1, 100)  # число загаданная ботом
-                    c = int(event.text)  # число игрока
-                except:
-                    (vk.method("messages.send",
-                               {'user_id': event.user_id, 'message': "Введите число, а не что-то другое!",
-                                'random_id': random.randint(0, 2048)}))
+tokenbot = ""
+vk_session = vk_api.VkApi(token=tokenbot)
 
-                else:
-                    if abs(a - b) > abs(a - c):  # побед игрок
-                        (vk.method("messages.send",
-                                   {'user_id': event.user_id, 'message': "Рандомное число - " + str(a) + "\n" +
-                                                                         "Ваше число - " + str(c) + "\n" +
-                                                                         "Мое число - " + str(b) + "\n" +
-                                                                         "Вы победили! Сыграем еще раз?\n",
-                                    'random_id': random.randint(0, 2048)}))
-                        self.game()
-                        return
+longpoll = VkLongPoll(vk_session)
+vk = vk_session.get_api()
 
-                    if abs(a - b) < abs(a - c):  # побед бот
-                        (vk.method("messages.send",
-                                   {'user_id': event.user_id, 'message': "Рандомное число - " + str(a) + "\n" +
-                                                                         "Ваше число - " + str(c) + "\n" +
-                                                                         "Мое число - " + str(b) + "\n" +
-                                                                         "Я победил! Сыграем еще раз?\n",
-                                    'random_id': random.randint(0, 2048)}))
-                        self.game()
-                        return
+upload = VkUpload(vk_session)
 
-                    if abs(a - b) == abs(a - c):  # ничья
-                        (vk.method("messages.send",
-                                   {'user_id': event.user_id, 'message': "Рандомное число - " + str(a) + "\n" +
-                                                                         "Ваше число - " + str(c) + "\n" +
-                                                                         "Мое число - " + str(b) + "\n" +
-                                                                         "Ничья! Сыграем еще раз?\n",
-                                    'random_id': random.randint(0, 2048)}))
-                        self.game()
-                        return
-
-def write_msg(user_id, message):
-    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': random.randint(0, 2048)})
-
-
-# 18d28ce73b747190a67dcc56a20017e3f8363de4fe3e37ebaf2d09023aae7b00b62280a4dd6190f587022 - main
-# 1a51e77f3a305327585f0b972bc9c6e8080b77c438b6980069bf1276f311944f06aba18c60dcc19a04321 - test
-tokenbot = "1a51e77f3a305327585f0b972bc9c6e8080b77c438b6980069bf1276f311944f06aba18c60dcc19a04321"
-vk = vk_api.VkApi(token=tokenbot)
-
-longpoll = VkLongPoll(vk)
-
-upload = VkUpload(vk)
 bots = {}
 attachments = []
-attachments.append('doc68106853_535852671')
+attachments.append(['doc68106853_535852671']) # Шо такое
+attachments.append(['doc68106853_547754026', "doc68106853_547755181", "doc68106853_547755567", "doc68106853_547756091", "doc68106853_547756193", "doc68106853_547756311"]) # денежное
+attachments.append(["doc68106853_548004508", "doc68106853_548004535"]) # таблицы
+
+rules = [] # СТО
+
+rules.append("https://narfu.ru/upload/iblock/f8d/STO_60_02.2.3_2018_Obshchie_trebovaniya_k_oformleniyu_i_izlozheniyu_dokumentov_uchebnoy_deyatelnosti_obuchayushchikhsya.pdf")
+
+rules.append("""_____
+Если работа состоит из глав и разделов, объединенных общей темой - “ОГЛАВЛЕНИЕ”
+Если работа состоит из глав и разделов, НЕ объединенных общей темой - “СОДЕРЖАНИЕ”
+
+Структурный элемент «ОГЛАВЛЕНИЕ/СОДЕРЖАНИЕ» следует выполнять, используя:
+* гарнитуру TimesNewRoman; 
+* размер шрифт (кегль) – от 12 до 14 пт (как в сновном тексте документа);
+* междустрочный интервал – полуторный (1,5строки);
+* выравнивание – по ширине, без полужирного шрифта. 
+
+Текст структурного элемента «ОГЛАВЛЕНИЕ/СОДЕРЖАНИЕ» следует размещать с отступом справа – 10 мм.
+Заголовки структурных элементов и разделов (глав) следует размещать без отступа от границы левого поля.
+Заголовки подразделов следует размещать сотступом слева – 5 мм.
+Заголовки пунктов следует размещать с отступом слева – 12,5 мм.
+_____""") # Оглавление
+rules.append("""_____
+При использовании односторонней печати документа необходимо текстовый материал работы оформлять на белой бумаге формата А4, соблюдая следующие размеры полей: 
+* правое – не менее 10 мм;
+* левое – 25-35 мм (в зависимости от переплёта);
+* верхнее - 20 мм, нижнее – не менее 20 мм.
+
+При использовании двусторонней печати документа необходимо текстовый материал работы оформлять на белой бумаге формата А4, соблюдая следующие размеры полей: 
+* внешнее – не менее 10 мм;
+* внутреннее – 25-35 мм (взависимости отпереплёта);
+* верхнее – 20 мм;
+* нижнее – не менее 20 мм; 
+* параметр – «зеркальные поля».
+_____""") # Поля
+rules.append("""_____
+Документы выполняют способом с использованием ПК и принтера: 
+* гарнитура Times New Roman; 
+* размер шрифта (кегль) – от 12 до 14 (текст выполняется единообразно одним размером шрифта во всем документе);
+* междустрочный интервал – полуторный;
+* выравнивание – по ширине;
+* цвет шрифта – чёрный. 
+* абзацы в тексте начинают абзацным отступом (12,5 мм);
+* интервал между абзацами: до – 0 пунктов (далее – пт), после – 0 пт. 
+! Допускается применение полужирного и курсивного начертания в тексте для выделения отдельных элементов: определений, выводов и т.п. !
+_____""") # Текст
+rules.append("""_____
+Наименование структурных элементов работы «ЛИСТ ДЛЯЗАМЕЧАНИЙ», «РЕФЕРАТ», «ОГЛАВЛЕНИЕ», «НОРМАТИВНЫЕ ССЫЛКИ», «ОПРЕДЕЛЕНИЯ, ОБОЗНАЧЕНИЯ И СОКРАЩЕНИЯ», «ВВЕДЕНИЕ», «ЗАКЛЮЧЕНИЕ/ВЫВОДЫ», «СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ», «ПРИЛОЖЕНИЯ» служат заголовками структурных элементов работы. 
+Заголовки структурных элементов располагают:
+* по центру строки;
+* без абзацного отступа;
+* используя интервал: после – 12 пт;
+* без точки в конце;
+* печатается прописными буквами, не подчеркивая. 
+! Пустые строки не допускаются до и после структурных элементов. !
+_____""") # Структурные элементы
+
+rules.append("""_____
+В заголовках разделов (глав) не допускаются переносы всловах, а также отрыв предлога или союза ототносящегося к нему слова.
+Заголовки разделов (глав) следует оформлять:
+* прописными буквами;
+* без разрядки;
+* без подчёркивания;
+* шрифт – полужирный;
+* выравнивание – по ширине;
+* без абзацного отступа.
+
+Максимальная длина текста в строке заголовка раздела (главы) должна быть:
+* c отступом заголовка раздела (главы) слева – 12,5 мм, справа – 10 мм;
+* размер шрифта (кегль) – от 12 до 14 (как в основном тексте). 
+
+Вторая ипоследующие строки заголовка раздела (главы) выполняются согласно требований, изложенных выше.
+С целью отделения заголовков разделов (глав) от основного текста их следует выполнять интервалом: после –12 пт (по последней строке заголовка раздела (главы)).
+Пустые строки не допускаются до и после заголовков разделов (глав). Если заголовок раздела (главы) состоит из нескольких предложений, их разделяют точкой, в конце последнего предложения точка не ставится.
+Каждый раздел (главу) следует начинать с новой страницы.
+""") # Заголовки разделов/глав
+
+rules.append("""_____
+Заголовки подразделов, пунктов и подпунктов следует оформлять с использованием абзацного отступа 12,5 мм с прописной буквы без точки в конце.
+Заголовки подразделов, пунктов и подпунктов следует выделять:
+* интервалами: до – 12 пт, после – 12 пт; 
+* выравнивание – по ширине; 
+* размер шрифта (кегль) – от 12 до 14 (как в основном тексте); 
+* допускается использование полужирного шрифта. 
+
+Вторая и следующие строки заголовков подразделов, пунктов и подпунктов начинаются без абзацного отступа. 
+Пустые строки недопускаются до и после заголовков подразделов, пунктов и подпунктов.
+
+Заголовки подразделов, пунктов и подпунктов не подчёркиваются. 
+В заголовках, вынесенных отдельной строкой, точка в конце не ставится. 
+Если заголовок состоит из нескольких предложений, их разделяют точкой, в конце последнего предложения точка не ставится.
+
+В заголовках подразделов, пунктов и подпунктов недопускаются переносы в словах, а также отрыв предлога или союза от относящегося к нему слова.
+Перед заголовком подраздела, если он помещён не в начале страницы, и после него должно быть не менее трёх строк текста. Если текст не помещается, то заголовок подраздела, пункта, подпункта рекомендуется перенести на другую страницу.
+_____""") #подразделы
+rules.append("""_____
+Уравнения и формулы (математические, химические и т.п.) следует выделять из текста в отдельную строку, с использованием интервалов: 
+* до –12 пт;
+* после –12 пт. 
+Допускается располагать формулы с выравниванием по центру без использования абзацного отступа или по ширине с использованием абзацного отступа. 
+Во всем документе соблюдается единообразный подход в расположении формул.
+
+После формулы ставят запятую. 
+Разьяснение формулы следует выполнять:
+* междустрочным интервалом – одинарным (1,0 строки);
+* с использованием интервалов: до – 0 пт, после последнего разъяснения символа – 12 пт; 
+* абзацный отступ каждой строки 12,5 мм;
+* выравнивание – по ширине; 
+* размер шрифта (кегль) в разъяснении уменьшается по сравнению с основным текстом на 1 –2 пункта. 
+Первую строчку разъяснения начинают сослова «где» с абзацного отступа, двоеточие после слова «где» не ставят.
+
+При выполнении расчётов формулу пишут:
+* с новой строки; 
+* с использованием абзацного отступа 12,5 мм; 
+* с использованием интервалов: до – 0 пт, после – 0 пт;
+* выравнивание – по ширине;
+* с подставленными значениями всех величин и коэффициентов, с конечным результатом и единицами измерения, без нумерации.
+При оформлении расчетов между объектами, заключающими формулы, следует использовать интервалы: до – 0пт, после – 0 пт.
+_____""") # Формулы
+rules.append("""_____
+При оформлении листингов программ рекомендуется использовать:
+* гарнитуру Courier New;
+* размер шрифта (кегль) – 11;
+* междустрочный интервал – одинарный; 
+* выравнивание – по левому краю; 
+* цвет шрифта – черный;
+* без абзацного отступа.
+
+При написании исходного кода на языке программирования необходимо соблюдать требования стандарта оформления данного кода.
+При оформлении программного кода следует использовать структурный отступ в два или четыре пробела. Другие размеры отступа использовать не рекомендуется.
+
+Для возможности явного отделения текста листинга от основного текста документа, листинг рекомендуется помещать в рамку. Листинги, размещенные в приложениях, помещать в рамку не обязательно. 
+
+Если листинг объемный, то его необходимо размещать в приложении, используя альбомную ориентацию страницы, листинг выполняется в два столбца.
+Либо в приложении размещаются основные функциональные элементы, а полный листинг размещается на диске в виде исходного проекта и скомпилированного программного файла. Диск прикладывается к работе.
+_____""") # Листинг
+
+rules.append("""_____
+Внутри документа могут быть приведены перечисления. Перед каждой позицией перечисления следует ставить дефис, а текст начинать со строчной буквы после пробела.
+
+При необходимости ссылки в тексте документа на одно из перечислений, перед каждой позицией перечисления следует ставить строчную букву (за исключением ё, з, о, ч, ь, й, ы, ъ) со скобкой, а текст начинать со строчной буквы после пробела.
+Для дальнейшей детализации перечислений необходимо использовать арабские цифры со скобкой, а запись производить с двойного абзацного отступа. Не допускается использовать арабские цифры с точкой.
+_____""") # список
+
+rules.append("""_____
+Приложение следует начинать с новой страницы с указанием наверху посередине страницы слова «ПРИЛОЖЕНИЕ» и его обозначения, а под ним в скобках для обязательного приложения пишут слово «обязательное», а для информационного – «рекомендуемое» или «справочное».
+
+Приложение должно иметь заголовок, который приводят с прописной буквы отдельной строкой.
+Приложение и его заголовок выполняют:
+* междустрочным интервалом – одинарный (1,0 строки);
+* выравнивание – по центру;
+* без абзацного отступа; 
+* отделяют интервалом: после – 12 пт.
+
+Приложения обозначают заглавными буквами русского алфавита, начиная с А, за исключением букв Ё, З, Й, О, Ч, Ь, Ы, Ъ. После слова «ПРИЛОЖЕНИЕ» следует буква, обозначающая его последовательность. Допускается обозначение приложений буквами латинского алфавита, за исключением букв I и О.
+_____""") #приложения
+
+rules.append("""_____
+На рисунок в тексте:
+* должна быть ссылка;
+* от текста отделяется интервалом до - 12 пт;
+* выравнивание - по центру;
+* без абзацного отступа
+* рамки либо есть у всех рисунков в документе, либо нет ни у одного;
+* крупные можно размещать на отдельной странице и даже вдоль, либо в приложение.
+
+Подпись рисунка:
+* без точки в конце;
+* без абзацного отступа;
+* выравнивание по центру;
+* отделять интервалами до - 6 пт, после - 12 пт
+_____""") # Рисунок
+
+rules.append("""_____
+Название таблицы - без абзацного отступа, без точки, выравнивание по ширине.
+Если таблица большая, то допускается поворот по часовой стрелке.
+Должна быть ссылка в тексте на таблицу, допускается в конце предложения в скобках.
+
+В конце заголовков и подзаголовков не ставится точка, указываются в единственном числе
+Текст в таблице с одинарным междустрочным интервалом, можно уменьшить текст на 1-2 пункта, но не менее 8
+
+Выравнивание текста в таблице:
+* В заголовках и подзаголовках граф - выравнивание по центру сверху
+* Боковик (текстовый) выравнивание по левому краю
+* Боковик (числовой) выравнивание по центру
+* Графы (текстовые) выравнивание по левому краю
+* Графы (числовые) выравнивание по центру
+* Таблицы ограничивают линиями, боковые по ширине основного текста
+* Текст в заголовках граф можно параллельно или перпендикулярно
+* После таблицы интервал до - 12 пт
+_____""") #Таблицы
+
+rules.append("""_____
+Допускаются ссылки в тексте на данный документ, нормативные документы и использованные источники. Ссылаться следует на литературный источник в целом или его разделы (главы), приложения. Допускаются ссылки на подразделы, пункты, таблицы и иллюстрации данного текстового документа.
+
+При ссылках на нормативные документы указывают только их обозначение, допускается не указывать год их утверждения при условии полного описания документа в структурных элементах «НОРМАТИВНЫЕ ССЫЛКИ» или «СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ».
+
+Ссылку на источник следует указывать порядковым номером по списку источников в квадратных скобках. Если объектов ссылки несколько, то их объединяют в одну комплексную ссылку, отделяя порядковые номера друг от друга точкой с запятой. Если объектов ссылки несколько и в списки использованных источников они расположены по порядку, то их объединяют в одну комплексную ссылку отделяя порядковые номера друг от друга знаком тире. Если по тексту приводится цитата, то в ссылке кроме номера источника указывается номер страницы, откуда взята цитата.
+
+Ссылки на разделы (главы), подразделы, пункты и подпункты текстового документа следует давать с указанием их номеров без названия
+На каждый источник информации в тексте работы должна быть дана ссылка.
+_____""") #Ссылки
+
+rules.append("""_____
+Используемые источники следует выполнять, используя:
+* гарнитуру Times New Roman; 
+* размер шрифт (кегль) – от 12 до 14 пт (как в основном тексте документа); 
+* междустрочный интервал – полуторный (1,5 строки); 
+* выравнивание – по ширине; 
+* не допускается использование полужирного шрифта, курсива.
+
+Схема библиографического описания источника представлена в примере:
+Заголовок описания. Основное заглавие [Тип источника] : Сведения, относящиеся к заглавию / Сведения об ответственности. – Сведения об издании. – Выходные данные. – Объем.
+
+Пример:
+1) Пестовская, С. Н. Английский язык для спасателей. Технология безопасности [Текст] : учеб. пособ. / С. Н. Пестовская ; Сев. (Аркт.) федер. ун-т им. М. В. Ломоносова. – Архангельск : САФУ, 2016. – 124 с
+2) Dickens, Ch. Oliver Twist [Text] / Ch. Dickens ; introd. and not. E. Westland ; ill. G. Cruikshank. – Hertfordshire : Wordsworth Editions Limited, 2000. – 373 p.
+3) Научная электронная библиотека E-Library [Электронный ресурс] : [офиц. сайт] / Науч. электрон. б-ка. – Электрон. дан. – [Москва] : Научная электронная библиотека, 2000–2017. – Режим доступа : https://elibrary.ru/, свободный (дата обращения : 11.10.2017). – Загл. с экрана.
+_____""") # Бибилиосылки
+
+
+
+keyboardsl = [open("keyboards/keyboard_menu.json", "r", encoding="UTF-8").read(), 
+              open("keyboards/keyboard_money.json", "r", encoding="UTF-8").read(), 
+              open("keyboards/keyboard_back.json", "r", encoding="UTF-8").read(),
+              open("keyboards/keyboard_game.json", "r", encoding="UTF-8").read()]
 
 users = {}
+# _________________________
+f = open('users', 'r')
+
+for line in f:
+    people = line.split()
+    users[people[0]] = people[1]
+
+f.close()
+# _________________________
 
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-        print(f'New message from', event.user_id, end='')
-
+        
+        print('New message from {}. \nText: {}\n----------------\n'.format(event.user_id, event.text))    
+        
         if bots.get(event.user_id) == None:
             bots[event.user_id] = VkBot(event.user_id)
-
-        write_msg(event.user_id, bots[event.user_id].new_message(event.text))
-
-        print('Text: ', event.text)
-        print("-------------------")
-        print(bots)
+            
+        bots[event.user_id].new_message(event.text)
