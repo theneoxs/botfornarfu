@@ -372,7 +372,8 @@ def sending(admin, user_id, message):
     
 def rate():
     list_d = list(users.items())
-    list_d.sort(key=lambda i: i[1]).reverse()
+    list_d.sort(key=lambda i: i[1])
+    list_d.reverse()
     msg = "Вот первые 10 игроков в рейтинге:\n"
     last = 0
     if len(list_d) < 9:
