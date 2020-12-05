@@ -42,7 +42,7 @@
           "type": "text",
           "label": "Назад"
         },
-        "color": "positive"
+        "color": "default"
       }]
   ]
 }

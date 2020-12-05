@@ -43,6 +43,13 @@
           "label": "Игра"
         },
         "color": "positive"
+	 },
+	 {
+		"action": {
+          "type": "text",
+          "label": "Предложение"
+        },
+        "color": "default"
 	 }]
   ]
 }

@@ -8,6 +8,13 @@
         "label": "Назад"
       },
       "color": "default"
+    },
+	{
+      "action": {
+        "type": "text",
+        "label": "Помощь"
+      },
+      "color": "positive"
     }]
   ]
 }
